@@ -6,27 +6,32 @@ class Product:
         """Represents a product object with a title (str) and a collection
         of technical specs (dict)."""
         self._title = None
-        self._specs = None
+        self._specs = {}
 
-    def update_title(self, soup: object) -> str:
+    def get_title(self) -> str:
+        """Returns product title."""
+        return self._title
+
+    def get_specs(self) -> dict:
+        """Returns product specs."""
+        return self._specs
+
+    def update_title(self, soup: object) -> None:
         """
         Takes in a BeautifulSoup object and extracts the name of the product
-        from it. Saves name of product to self._title. Returns self._title.
+        from it. Saves name of product to self._title.
 
-        :param soup: BeautifulSoup object
-        : return: Product title, str
+        : param soup: BeautifulSoup object
         """
         # Hash syntax in select() when searching an id
         self._title = soup.select("#product-page-title")[0].get_text("|", True)
-        return self._title
 
-    def update_specs(self, soup: object) -> dict:
+    def update_specs(self, soup: object) -> None:
         """
         Takes in a BeautifulSoup object and extracts the technical specs from
-        it. Saves tech specs as dictionary in self._specs. Returns self._specs.
+        it. Saves tech specs as dictionary in self._specs.
 
         :param soup: BeautifulSoup object
-        :return: Product's tech specs, dict.
         """
         # Lists of headers and their corresponding specs, not formatted
         # Dot syntax in select() when searching a class
@@ -39,7 +44,5 @@ class Product:
         specs_li = [spec.get_text("|", True) for spec in specs_li]
 
         # Create product's spec dict
-        self._specs = {self._specs[headers_li[i]]: specs_li[i] for i in
-                       range(len(headers_li))}
-
-        return self._specs
+        for i in range(len(headers_li)):
+            self._specs[headers_li[i]] = specs_li[i]

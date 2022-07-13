@@ -5,7 +5,7 @@ from time import sleep
 from product import Product
 
 # Create DB object
-# Keys: Product titles Values: Dicts containing spec key/val pairs
+# Keys: Product titles Values: Product objects
 db = Database()
 
 # Returns response code from request
@@ -18,11 +18,12 @@ soup = BeautifulSoup(response_html, "html.parser")
 
 # Creates Product object and sets name of product
 product = Product()
-title = product.update_title(soup)
-specs = product.update_specs(soup)
+product.update_title(soup)
+title = product.get_title()
+product.update_specs(soup)
 
-# Complete product info in db
-db.set_db(title, product_specs)
+# Add product to db
+db.update_db(title, product)
 
 # Delay requests to 1 req/second
 sleep(1)
