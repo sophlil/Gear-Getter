@@ -1,15 +1,27 @@
 
 class Database:
+
     def __init__(self):
+        """Represents a database that holds products and their corresponding
+        technical specs. The database is an dictionary with product titles
+        (str) as the keys and product objects as the values."""
         self._db = {}
 
     def get_db(self) -> dict:
+        """Returns the whole database."""
         return self._db
 
-    def set_db(self, key: str, value: dict=None) -> None:
-        if value is None:
-            self._db[key] = {}
+    def update_db(self, key: str, value: object) -> dict:
+        """
+        Adds a key/value pair to the db. Key should be string of product's
+        title and value should be product object.
+
+        :param key: Product title, str
+        :param value: Product object
+        :return: self._db, dict
+        """
         self._db[key] = value
+        return self._db
 
 
 
