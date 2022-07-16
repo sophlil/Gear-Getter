@@ -3,10 +3,26 @@ import requests
 from database import Database
 from time import sleep
 from product import Product
+from pymongo import MongoClient
+import certifi
+from credentials import *
+
+# Connection string to Mongodb Atlas Cluster
+connection = 'mongodb+srv://' + MDB_USERNAME + ':' + MDB_PASSWORD +\
+             '@clustergg.4h3xryh.mongodb.net/?retryWrites=true&w=majority'
+
+# Connects to cluster with necessary certificates
+client = MongoClient(connection, tlsCAFile=certifi.where())
+
+# Create new DB on cluster called 'Products'
+mdb = client.Products
+
+# Create new collection for DB 'Products' called 'backpacks'
+backpacks = mdb.backpacks
 
 # Create DB object
 # Keys: Product titles Values: Product objects
-db = Database()
+# db = Database()
 
 # Create prefix to add to links
 prefix = "https://www.rei.com"
@@ -35,17 +51,17 @@ for link in links:
     # Creates Product object and updates title/specs of product
     product = Product()
     product.update_title(bs_obj)
-    title = product.get_title()
     product.update_specs(bs_obj)
 
+    # Adds title/spec dict to MDB
+    add = {product.get_title(): product.get_specs()}
+    backpacks.insert_one(add)
+
     # Add product to db as product title: product object key/val pairs
-    db.update_db(title, product)
+    # db.update_db(title, product)
 
     # Delay requests to 1 req/second
     sleep(1)
-
-print(db.get_db().keys())
-print(db.get_db()['Co-op Cycles DRT 1.1 Bike'].get_specs())
 
 
 # TO DO:
