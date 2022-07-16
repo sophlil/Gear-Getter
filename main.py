@@ -1,6 +1,5 @@
 from bs4 import BeautifulSoup
 import requests
-from database import Database
 from time import sleep
 from product import Product
 from pymongo import MongoClient
@@ -20,10 +19,6 @@ mdb = client.Products
 # Create new collection for DB 'Products' called 'backpacks'
 backpacks = mdb.backpacks
 
-# Create DB object
-# Keys: Product titles Values: Product objects
-# db = Database()
-
 # Create prefix to add to links
 prefix = "https://www.rei.com"
 
@@ -33,10 +28,11 @@ response = requests.get("https://www.rei.com/c/backpacking-packs")
 # Represents html content from response
 soup = BeautifulSoup(response.content, "html.parser")
 
-# Gather all link elements from search page
+# Gather all a tags from search page
 link_el = soup.find_all('a')
 
-# Create a list of links for products only
+# Create a list of links for products only, getting the attribute val of 'href'
+# for each a tag
 links = []
 for el in link_el:
     link = el["href"]
@@ -57,14 +53,12 @@ for link in links:
     add = {product.get_title(): product.get_specs()}
     backpacks.insert_one(add)
 
-    # Add product to db as product title: product object key/val pairs
-    # db.update_db(title, product)
-
     # Delay requests to 1 req/second
     sleep(1)
 
 
 # TO DO:
-# - Set up actual DB for scraper
-# - Create Search(?) object to handle finding product links, adding products to
-# db, looping through links on search page
+# - Design of MDB? What product info should be stored? In what way should it
+# be stored?
+# - Create Search(?) object or functions to handle finding product links,
+# adding products to db, looping through links on search page
