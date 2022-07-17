@@ -25,33 +25,28 @@ CATEGORIES = ["hiking-backpacks", "tents",
                               "climbing-hardware", "climbing-essentials",
                               "mountaineering-gear"]
 
+# Create prefix to add to search page links
+SEARCH_PREFIX = "https://www.rei.com/c/"
+
 # Create new DB on cluster called 'Products'
 mdb = client.Products
 
-# Create new collection for DB 'Products' called 'backpacks'
-backpacks = mdb.backpacks
+# Iterate through each category URL search page
+for category in CATEGORIES:
+    # Create new collection for Products DB named after the category
+    collection = mdb[category]
 
-# Create prefix to add to search page links
-search_prefix = "https://www.rei.com/c/"
+    # Returns response code from request.
+    response = requests.get(SEARCH_PREFIX + category)
 
-# Returns response code from request
-response = requests.get(search_prefix + 'backpacking-packs')
+    # Represents html content from response
+    soup = BeautifulSoup(response.content, "html.parser")
 
-# Represents html content from response
-soup = BeautifulSoup(response.content, "html.parser")
+    # Create link manager
+    lm = LinkManager()
 
-# Create link manager
-lm = LinkManager()
+    # Find links to all product pages from search page
+    lm.search_page_links(soup)
 
-# Find links to all products from search page
-lm.search_page_links(soup)
-
-# Extract product details from each link on search page and save them in db
-lm.add_products_db(backpacks)
-
-
-# TO DO:
-# - Design of MDB? What product info should be stored? In what way should it
-# be stored?
-# - Create Search(?) object or functions to handle finding product links,
-# adding products to db, looping through links on search page
+    # Extract product details from each product page and save them in db
+    lm.add_products_db(collection)

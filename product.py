@@ -6,7 +6,7 @@ class Product:
         """Represents a product object with a title (str), a collection
         of technical specs (dict), and a weight (str)."""
         self._title = None
-        self._weight = ''
+        self._weight = ' '
         self._specs = {}
 
     def get_title(self) -> str:
@@ -26,7 +26,7 @@ class Product:
         Takes in a BeautifulSoup object and extracts the name of the product
         from it. Saves name of product to self._title.
 
-        : param soup: BeautifulSoup object
+        :param soup: BeautifulSoup object
         """
         # Hash syntax in select() when searching an id
         self._title = soup.select("#product-page-title")[0].get_text("|", True)

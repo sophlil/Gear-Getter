@@ -2,6 +2,7 @@ from product import Product
 from bs4 import BeautifulSoup
 import requests
 from time import sleep
+import pymongo
 
 class LinkManager:
 
@@ -20,7 +21,7 @@ class LinkManager:
         self._links = []
         self._prefix = "https://www.rei.com"
 
-    def search_page_links(self, soup: object) -> None:
+    def search_page_links(self, soup: BeautifulSoup) -> None:
         # Gather all a tags from search page
         link_el = soup.find_all('a')
 
@@ -31,7 +32,7 @@ class LinkManager:
             if link[0:9] == '/product/':
                 self._links.append(self._prefix + link)
 
-    def add_products_db(self, db):
+    def add_products_db(self, db: pymongo) -> None:
         # Extract product details from each link on search page and save them in db
         for link in self._links:
             response = requests.get(link)
@@ -42,7 +43,7 @@ class LinkManager:
             product.update_title(bs_obj)
             product.update_weight(bs_obj)
 
-            # Adds title/spec dict to MDB
+            # Adds title/weight to MDB
             add = {product.get_title(): product.get_weight()}
             db.insert_one(add)
 
